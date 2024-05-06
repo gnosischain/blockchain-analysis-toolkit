@@ -1,0 +1,6 @@
+dune-client==1.7.3
+python-dotenv==1.0.1
+
+networkx==3.3
+matplotlib==3.8.4
+pygraphviz==1.12

@@ -1,0 +1,14 @@
+# python
+**/__pycache__
+
+# mac
+.DS_Store
+
+# environments
+.env
+
+# vscode config
+.vscode
+
+# Ignore directories starting with '_'
+**/_*/
