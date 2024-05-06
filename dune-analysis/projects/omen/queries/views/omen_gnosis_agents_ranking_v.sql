@@ -193,7 +193,7 @@ top10_accuracy AS (
             ,range 
             ,date_cutoff
         FROM final
-        WHERE cnt_resolved >= 2
+        WHERE cnt_resolved >= 20
         GROUP BY range,date_cutoff
     ),
     UNNEST(labels) WITH ORDINALITY l(label,idx)
