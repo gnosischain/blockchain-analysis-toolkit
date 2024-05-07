@@ -4,10 +4,7 @@ WITH
 
 gnosis_gw_signupPerson AS (
     SELECT * FROM dune.hdser.query_3663810
-),
-
-gnosis_gw_wallets AS (
-    SELECT * FROM dune.hdser.query_3674206
+    WHERE created_at >= DATE '2024-05-01'
 ),
 
 user_transactions AS (
@@ -47,8 +44,27 @@ norm_distribution AS (
         ,CAST(cnt AS REAL)/(SUM(cnt) OVER (PARTITION BY label)) AS pct
     FROM
         distribution
+),
+
+hours_from_creation AS (
+    SELECT
+        label
+        ,time_diff
+    FROM
+        UNNEST(SEQUENCE(0,47)) s(time_diff)
+        ,UNNEST(ARRAY['Older', 'Last 30 Days']) s(label)
 )
 
 
-SELECT * FROM norm_distribution
-WHERE time_diff < 48
+SELECT
+    t2.label
+    ,t2.time_diff
+    ,COALESCE(t1.cnt,0) AS cnt
+    ,COALESCE(t1.pct,0) AS pct
+FROM norm_distribution t1
+RIGHT JOIN
+    hours_from_creation t2
+    ON
+    t2.time_diff = t1.time_diff
+    AND
+    t2.label = t1.label

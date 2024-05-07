@@ -4,6 +4,7 @@ WITH
 
 gnosis_gw_signupPerson AS (
     SELECT * FROM dune.hdser.query_3663810
+    WHERE created_at >= DATE '2024-05-01'
 ),
 
 final AS (
@@ -32,7 +33,7 @@ SELECT
     t2.age_cohort
     ,t2.hour
     ,COALESCE(t1.cnt,0) AS cnt
-    ,CAST(COALESCE(t1.cnt,0) AS REAL)/(SUM(COALESCE(t1.cnt,0)) OVER (PARTITION BY t2.age_cohort)) AS pct
+    ,CAST(COALESCE(t1.cnt,0) AS REAL)/NULLIF(SUM(COALESCE(t1.cnt,0)) OVER (PARTITION BY t2.age_cohort),0) AS pct
 FROM
     final t1
 RIGHT JOIN
