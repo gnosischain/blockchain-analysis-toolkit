@@ -3,7 +3,7 @@
 WITH
 
 omen_gnosis_markets AS (
-    SELECT * FROM dune.hdser.result_omen_gnosis_markets_mv
+    SELECT * FROM query_3668567
 ),
 
 LogNewAnswer  AS (
