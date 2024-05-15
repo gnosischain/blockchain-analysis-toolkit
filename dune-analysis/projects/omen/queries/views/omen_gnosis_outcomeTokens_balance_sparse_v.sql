@@ -75,7 +75,7 @@ netflow AS (
 ),
 
 omen_gnosis_markets AS (
-    SELECT fixedProductMarketMaker, collateralToken, outcomeSlotCount FROM dune.hdser.query_3668567
+    SELECT fixedProductMarketMaker, collateralToken, outcomeSlotCount FROM query_3668567
 ),
 
 outputTokens_market AS (

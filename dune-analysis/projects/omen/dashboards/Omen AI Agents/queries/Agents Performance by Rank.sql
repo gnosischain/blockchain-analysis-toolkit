@@ -7,11 +7,11 @@ omen_gnosis_trades AS (
 ),
 
 omen_gnosis_markets_status AS (
-    SELECT * FROM dune.hdser.query_3601593
+    SELECT * FROM query_3601593
 ),
 
 omen_gnosis_markets AS (
-    SELECT * FROM dune.hdser.result_omen_gnosis_markets_mv
+    SELECT * FROM query_3668567
 ),
 
 ai_agents_traders AS (
@@ -20,9 +20,9 @@ ai_agents_traders AS (
         ,t1.label
         ,t2.date_cutoff
     FROM 
-        dune.hdser.query_3582994 t1
+        query_3582994 t1
     INNER JOIN
-         dune.hdser.query_3644289 t2
+         query_3644289 t2
          ON t2.label = t1.label
     WHERE
         t2.ranking = '{{ranking}}'

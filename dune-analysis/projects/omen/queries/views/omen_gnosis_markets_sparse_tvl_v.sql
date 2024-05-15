@@ -17,7 +17,7 @@ omen_gnosis_markets_odds_reserves AS (
 ),
 
 omen_gnosis_markets AS (
-    SELECT * FROM dune.hdser.query_3668567
+    SELECT * FROM query_3668567
 ),
 
 markets_tvl AS (

@@ -31,7 +31,7 @@ gnosis_reserves_delta AS (
 ),
 
 omen_gnosis_markets_status AS (
-    SELECT * FROM dune.hdser.query_3601593
+    SELECT * FROM query_3601593
     WHERE status = 'Resolved' AND is_valid = TRUE
 ),
 
@@ -44,7 +44,7 @@ omen_gnosis_markets AS (
             x -> CASE WHEN x <> 0 THEN ARRAY_POSITION(t2.payoutNumerators, x) - 1 ELSE NULL END
           )
           , x -> x IS NOT NULL) AS payout_outcome
-    FROM dune.hdser.result_omen_gnosis_markets_mv t1
+    FROM query_3668567 t1
     INNER JOIN omen_gnosis_markets_status t2
     ON t2.fixedProductMarketMaker = t1.fixedProductMarketMaker
 ),
@@ -55,9 +55,9 @@ ai_agents_traders AS (
         ,t1.label
         ,t2.date_cutoff
     FROM 
-        dune.hdser.query_3582994 t1
+        query_3582994 t1
     INNER JOIN
-         dune.hdser.query_3644289 t2
+         query_3644289 t2
          ON t2.label = t1.label
     WHERE
         t2.ranking = '{{ranking}}'

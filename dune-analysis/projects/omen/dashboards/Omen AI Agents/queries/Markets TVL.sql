@@ -3,18 +3,18 @@
 WITH
 
 gnosis_omen_markets_tvl AS (
-    SELECT * FROM dune.hdser.query_3668377
+    SELECT * FROM query_3668377
 ),
 
 omen_gnosis_markets AS (
-    SELECT * FROM dune.hdser.query_3668567
+    SELECT * FROM query_3668567
 ),
 
 gnosis_omen_markets_odds_reserves AS (
     SELECT 
         t1.* 
         ,t1.cumsum_feeAmount/POWER(10,t3.decimals) * t3.price AS cumsum_feeAmount_usd
-    FROM dune.hdser.query_3668140 t1
+    FROM query_3668140 t1
     INNER JOIN
         omen_gnosis_markets t2
         ON t2.fixedproductmarketmaker = t1.fixedproductmarketmaker

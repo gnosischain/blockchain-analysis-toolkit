@@ -2,23 +2,6 @@
 
 WITH
 
-omen_gnosis_trades AS (
-    SELECT * FROM omen_gnosis.trades
-),
-
-omen_gnosis_markets_status AS (
-    SELECT * FROM dune.hdser.query_3601593
-),
-
-omen_gnosis_markets AS (
-    SELECT * FROM dune.hdser.result_omen_gnosis_markets_mv
-),
-
-
-ai_agents_traders AS (
-    SELECT * FROM dune.hdser.query_3582994
-),
-
 relevant_markets AS (
     SELECT
         fixedproductmarketmaker
@@ -29,9 +12,9 @@ relevant_markets AS (
             t2.label
             ,fixedproductmarketmaker
             ,outcomeIndex AS bet_outcome
-        FROM omen_gnosis_trades t1
+        FROM omen_gnosis.trades t1
         INNER JOIN
-            ai_agents_traders AS t2
+            query_3582994 AS t2 --ai_agents_traders
             ON t2.address = t1.tx_from OR t2.address = t1.tx_to
         WHERE
             action = 'Buy'
@@ -41,7 +24,7 @@ relevant_markets AS (
 ),
 
 markets_outcome AS (
-SELECT 
+    SELECT 
         t2.label
         ,t1.conditionid
         ,t1.questionid
@@ -60,84 +43,54 @@ SELECT
         ,t3.resolution_time
         ,t3.is_valid
     FROM 
-        omen_gnosis_markets t1
+        query_3668567 t1 --omen_gnosis_markets
     INNER JOIN
         relevant_markets t2
        ON t2.fixedproductmarketmaker = t1.fixedproductmarketmaker
     LEFT JOIN
-        omen_gnosis_markets_status t3
+        query_3601593 t3 --omen_gnosis_markets_status
         ON t3.conditionId = t1.conditionid
         AND t3.questionId = t1.questionid
 ),
+
 markets_outcome_final AS (
-    SELECT 
-        *
-        ,array_union(payout_outcome,bet_outcome) = payout_outcome AS correct_bet
-    FROM markets_outcome
+SELECT 
+    label
+    ,market_status
+    ,resolution_time
+    ,is_valid
+    ,array_union(payout_outcome,bet_outcome) = payout_outcome AS correct_bet
+FROM markets_outcome
 ),
 
-final_all AS (
-    SELECT 
-        label
-        ,COUNT(CASE WHEN market_status = 'Resolved' THEN 1 END) AS cnt_resolved
-        ,COUNT(CASE WHEN correct_bet AND is_valid = True THEN 1 END) AS cnt_correct
-        ,COUNT(CASE WHEN NOT correct_bet AND is_valid = True THEN 1 END) AS cnt_wrong
-        ,CAST(COUNT(CASE WHEN correct_bet AND is_valid = True THEN 1 END) AS REAL) / COUNT(CASE WHEN market_status = 'Resolved' AND is_valid = True THEN 1 END) * 100 AS pct_correct
-    FROM
-        markets_outcome_final
-    GROUP BY 1
-),
 
-final_last_month AS (
-    SELECT 
-        label
-        ,COUNT(CASE WHEN market_status = 'Resolved' THEN 1 END) AS cnt_resolved
-        ,COUNT(CASE WHEN correct_bet AND is_valid = True THEN 1 END) AS cnt_correct
-        ,COUNT(CASE WHEN NOT correct_bet AND is_valid = True THEN 1 END) AS cnt_wrong
-        ,CAST(COUNT(CASE WHEN correct_bet AND is_valid = True THEN 1 END) AS REAL) / COUNT(CASE WHEN market_status = 'Resolved' AND is_valid = True THEN 1 END) * 100 AS pct_correct
+range_timestamp AS (
+    SELECT
+        range
+        ,date_cutoff
     FROM
-        markets_outcome_final
+        UNNEST(ARRAY[TIMESTAMP '2019-01-01 00:00',NOW() - INTERVAL '1' MONTH, NOW() - INTERVAL '3' MONTH, NOW() - INTERVAL '6' MONTH]) WITH ORDINALITY t(date_cutoff,idx)
+        ,UNNEST(ARRAY['Full','Last Month','Last 3 Months', 'Last 6 Months']) WITH ORDINALITY s(range,idx)
     WHERE
-        resolution_time >= NOW() - INTERVAL '1' MONTH
-    GROUP BY 1
-),
-
-final_last_3month AS (
-    SELECT 
-        label
-        ,COUNT(CASE WHEN market_status = 'Resolved' THEN 1 END) AS cnt_resolved
-        ,COUNT(CASE WHEN correct_bet AND is_valid = True THEN 1 END) AS cnt_correct
-        ,COUNT(CASE WHEN NOT correct_bet AND is_valid = True THEN 1 END) AS cnt_wrong
-        ,CAST(COUNT(CASE WHEN correct_bet AND is_valid = True THEN 1 END) AS REAL) / COUNT(CASE WHEN market_status = 'Resolved' AND is_valid = True THEN 1 END) * 100 AS pct_correct
-    FROM
-        markets_outcome_final
-    WHERE
-        resolution_time >= NOW() - INTERVAL '3' MONTH
-    GROUP BY 1
-),
-
-final_last_6month AS (
-    SELECT 
-        label
-        ,COUNT(CASE WHEN market_status = 'Resolved' THEN 1 END) AS cnt_resolved
-        ,COUNT(CASE WHEN correct_bet AND is_valid = True THEN 1 END) AS cnt_correct
-        ,COUNT(CASE WHEN NOT correct_bet AND is_valid = True THEN 1 END) AS cnt_wrong
-        ,CAST(COUNT(CASE WHEN correct_bet AND is_valid = True THEN 1 END) AS REAL) / COUNT(CASE WHEN market_status = 'Resolved' AND is_valid = True THEN 1 END) * 100 AS pct_correct
-    FROM
-        markets_outcome_final
-    WHERE
-        resolution_time >= NOW() - INTERVAL '6' MONTH
-    GROUP BY 1
+        t.idx = s.idx
 ),
 
 final AS (
-    SELECT *, 'Full' AS range, TIMESTAMP '2019-01-01 00:00' AS date_cutoff FROM final_all
-    UNION ALL
-    SELECT *, 'Last Month' AS range, NOW() - INTERVAL '1' MONTH AS date_cutoff FROM final_last_month
-    UNION ALL
-    SELECT *, 'Last 3 Months' AS range, NOW() - INTERVAL '3' MONTH AS date_cutoff FROM final_last_3month
-    UNION ALL
-    SELECT *, 'Last 6 Months' AS range, NOW() - INTERVAL '6' MONTH AS date_cutoff FROM final_last_6month
+    SELECT 
+        t1.label
+        ,t2.range
+        ,t2.date_cutoff 
+        ,COUNT(CASE WHEN t1.market_status = 'Resolved' THEN 1 END) AS cnt_resolved
+        ,COUNT(CASE WHEN t1.correct_bet AND t1.is_valid = True THEN 1 END) AS cnt_correct
+        ,COUNT(CASE WHEN NOT t1.correct_bet AND t1.is_valid = True THEN 1 END) AS cnt_wrong
+        ,CAST(COUNT(CASE WHEN t1.correct_bet AND t1.is_valid = True THEN 1 END) AS REAL) / NULLIF(COUNT(CASE WHEN t1.market_status = 'Resolved' AND t1.is_valid = True THEN 1 END),0) * 100 AS pct_correct
+    FROM
+        markets_outcome_final t1
+    INNER JOIN
+        range_timestamp t2
+        ON
+        t1.resolution_time >= t2.date_cutoff
+    GROUP BY 1,2,3
 ),
 
 top10_resolved AS (

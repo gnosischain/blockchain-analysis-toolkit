@@ -3,11 +3,11 @@
 WITH
 
 gnosis_gw_signupPerson AS (
-    SELECT * FROM dune.hdser.query_3663810
+    SELECT * FROM query_3663810
 ),
 
 gnosis_gw_comethImport AS (
-    SELECT * FROM dune.hdser.query_3674224
+    SELECT * FROM query_3674224
 )
 
 SELECT

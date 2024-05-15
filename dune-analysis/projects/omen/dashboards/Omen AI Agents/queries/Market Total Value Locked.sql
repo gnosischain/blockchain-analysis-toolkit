@@ -18,7 +18,7 @@ omen_gnosis_markets AS (
 ),
 
 omen_gnosis_markets_status AS (
-    SELECT * FROM dune.hdser.query_3601593
+    SELECT * FROM query_3601593
     WHERE  fixedproductmarketmaker = CAST({{fixedproductmarketmaker}} AS varbinary)
 ),
 

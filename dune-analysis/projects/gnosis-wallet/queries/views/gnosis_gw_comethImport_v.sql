@@ -3,11 +3,11 @@
 WITH
 
 GnosisSafe_AddedOwner AS (
-    SELECT * FROM dune.hdser.query_3663783
+    SELECT * FROM query_3663783
 ),
 
 gnosis_SafeSetup AS (
-    SELECT * FROM dune.hdser.query_3629703
+    SELECT * FROM query_3629703
 )
 
 SELECT 

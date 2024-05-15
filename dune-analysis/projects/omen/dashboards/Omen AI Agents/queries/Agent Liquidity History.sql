@@ -6,11 +6,11 @@ omen_gnosis_liquidity AS (
 ),
 
 omen_gnosis_markets AS (
-    SELECT * FROM dune.hdser.result_omen_gnosis_markets_mv
+    SELECT * FROM query_3668567
 ),
 
 ai_agents_makers AS (
-    SELECT * FROM dune.hdser.query_3584116
+    SELECT * FROM query_3584116
 ),
 
 ConditionalTokens_evt_PositionsMerge AS (

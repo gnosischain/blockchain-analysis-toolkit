@@ -8,7 +8,7 @@ omen_gnosis_payouts AS (
 
 
 ai_agents_traders AS (
-    SELECT * FROM dune.hdser.query_3582994
+    SELECT * FROM query_3582994
 )
 
 SELECT

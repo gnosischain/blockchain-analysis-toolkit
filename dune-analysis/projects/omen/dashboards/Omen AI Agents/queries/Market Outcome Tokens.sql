@@ -3,12 +3,12 @@
 WITH
 
 gnosis_omen_markets_odds_reserves AS (
-    SELECT * FROM dune.hdser.query_3668140
+    SELECT * FROM query_3668140
     WHERE  fixedproductmarketmaker = CAST({{fixedproductmarketmaker}} AS varbinary)
 ),
 
 omen_gnosis_markets_status AS (
-    SELECT * FROM dune.hdser.query_3601593
+    SELECT * FROM query_3601593
     WHERE  fixedproductmarketmaker = CAST({{fixedproductmarketmaker}} AS varbinary)
 ),
 
@@ -37,7 +37,7 @@ sparse_prob AS (
 
 gnosis_omen_outcomeTokens_supply AS (
     --gnosis_omen_outcomeTokens_balance_sparse_v
-    SELECT * FROM dune.hdser.query_3684914
+    SELECT * FROM query_3684914
     WHERE 
         user = 0x0000000000000000000000000000000000000000
         AND

@@ -7,11 +7,11 @@ omen_gnosis_trades AS (
 ),
 
 omen_gnosis_markets AS (
-    SELECT * FROM dune.hdser.result_omen_gnosis_markets_mv
+    SELECT * FROM query_3668567
 ),
 
 ai_agents_traders AS (
-    SELECT * FROM dune.hdser.query_3582994
+    SELECT * FROM query_3582994
 ),
 
 trades_list AS (

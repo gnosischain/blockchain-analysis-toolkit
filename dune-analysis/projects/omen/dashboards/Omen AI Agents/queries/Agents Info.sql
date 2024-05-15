@@ -6,4 +6,4 @@ SELECT
     GET_CHAIN_EXPLORER_ADDRESS('gnosis', TRY_CAST(address AS VARCHAR)),
     TRY_CAST(address AS VARCHAR)
   ) AS "Address"
-FROM dune.hdser.query_3582994
+FROM query_3582994

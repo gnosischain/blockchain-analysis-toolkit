@@ -3,7 +3,7 @@
 WITH
 
 gnosis_gw_signupPerson AS (
-    SELECT * FROM dune.hdser.query_3663810
+    SELECT * FROM query_3663810
     WHERE created_at >= DATE '2024-05-01'
 ),
 

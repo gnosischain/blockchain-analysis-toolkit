@@ -16,7 +16,7 @@ wallet_Safev1_4_1_evt_SafeSetup AS (
   SELECT
     t1.*
     ,IF(t2.signer IS NULL, 0, 1) AS has_p256_signer
-  FROM dune.hdser.query_3629703 t1
+  FROM query_3629703 t1
   LEFT JOIN
     P256SignerFactory_NewSignerCreated t2
     ON
