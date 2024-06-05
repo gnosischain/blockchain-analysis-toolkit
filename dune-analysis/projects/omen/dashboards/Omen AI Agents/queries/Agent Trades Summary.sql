@@ -10,7 +10,7 @@ omen_gnosis_markets_status AS (
 ),
 
 omen_gnosis_markets AS (
-    SELECT * FROM query_3668567
+    SELECT * FROM query_3668567 
 ),
 
 ai_agents_traders AS (

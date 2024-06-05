@@ -12,13 +12,24 @@ gnosis_omen_markets_tvl AS (
     WHERE  fixedproductmarketmaker = CAST({{fixedproductmarketmaker}} AS varbinary)
 ),
 
+resolution AS (
+    SELECT
+        IF(DATE_DIFF('hour',start_time,CURRENT_TIMESTAMP)>=10000, 'day', 'hour') AS step
+    FROM (
+        SELECT 
+            MIN(block_time) AS start_time 
+        FROM 
+           gnosis_omen_markets_tvl
+    )
+),
+
 omen_gnosis_markets AS (
     SELECT * FROM query_3668567
     WHERE  fixedproductmarketmaker = CAST({{fixedproductmarketmaker}} AS varbinary)
 ),
 
 omen_gnosis_markets_status AS (
-    SELECT * FROM query_3601593
+    SELECT * FROM dune.hdser.query_3601593
     WHERE  fixedproductmarketmaker = CAST({{fixedproductmarketmaker}} AS varbinary)
 ),
 
@@ -41,22 +52,24 @@ gnosis_omen_markets_odds_reserves AS (
 
 sparse_hour AS (
     SELECT 
-        DATE_TRUNC('hour', t1.block_time) AS block_datetime
+        DATE_TRUNC(step, t1.block_time) AS block_datetime
         ,ARRAY_AGG(t1.tvl_usd ORDER BY t1.block_time DESC, t1.evt_index DESC)[1] AS tvl_usd
         ,ARRAY_AGG(t2.cumsum_feeAmount_usd ORDER BY t2.block_time DESC, t2.evt_index DESC)[1] AS cumsum_feeAmount_usd
     FROM 
         gnosis_omen_markets_tvl t1
+    CROSS JOIN
+        resolution
     LEFT JOIN
         gnosis_omen_markets_odds_reserves t2
         ON
-        DATE_TRUNC('hour', t2.block_time) = DATE_TRUNC('hour', t1.block_time)
+        DATE_TRUNC(step, t2.block_time) = DATE_TRUNC(step, t1.block_time)
     GROUP BY 1
 ),
 
 range AS (
     SELECT 
         CAST(MIN(block_datetime) AS TIMESTAMP) AS start_time
-        ,CAST((SELECT opening_time FROM omen_gnosis_markets_status) AS TIMESTAMP) AS end_time
+        ,LEAST(CAST(CURRENT_TIMESTAMP AS TIMESTAMP), CAST((SELECT opening_time FROM omen_gnosis_markets_status) AS TIMESTAMP)) AS end_time
     FROM
         sparse_hour
 ),
@@ -66,7 +79,12 @@ calendar_hour AS (
         block_datetime 
     FROM 
         range
-        ,UNNEST( sequence( start_time, end_time, INTERVAL '1' hour)) t(block_datetime)
+        ,UNNEST( sequence( 
+            start_time, 
+            end_time, 
+            IF(DATE_DIFF('hour',start_time,end_time)>=10000, INTERVAL '1' day, INTERVAL '1' hour)
+            )
+        ) t(block_datetime)
 ),
 
 dense AS (

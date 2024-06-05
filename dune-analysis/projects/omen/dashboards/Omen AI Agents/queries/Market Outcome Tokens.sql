@@ -1,10 +1,19 @@
 -- query_id: 3685027
 
-WITH
-
 gnosis_omen_markets_odds_reserves AS (
     SELECT * FROM query_3668140
     WHERE  fixedproductmarketmaker = CAST({{fixedproductmarketmaker}} AS varbinary)
+),
+
+resolution AS (
+    SELECT
+        IF(DATE_DIFF('hour',start_time,CURRENT_TIMESTAMP)>=10000, 'day', 'hour') AS step
+    FROM (
+        SELECT 
+            MIN(block_time) AS start_time 
+        FROM 
+           gnosis_omen_markets_odds_reserves
+    )
 ),
 
 omen_gnosis_markets_status AS (
@@ -19,16 +28,16 @@ sparse_prob AS (
         ,idx - 1 AS outcomeIndex
     FROM (
          SELECT 
-            DATE_TRUNC('hour', block_time) AS hour
+            DATE_TRUNC(step, block_time) AS hour
             ,odds
             ,ROW_NUMBER() OVER (
                 PARTITION BY
-                    DATE_TRUNC('hour', block_time)
+                    DATE_TRUNC(step, block_time)
                 ORDER BY 
                     block_time DESC
                     ,evt_index DESC
             ) as rn
-        FROM gnosis_omen_markets_odds_reserves
+        FROM gnosis_omen_markets_odds_reserves, resolution
     )
     ,UNNEST(odds) WITH ORDINALITY o(value,idx)
     WHERE
@@ -37,7 +46,7 @@ sparse_prob AS (
 
 gnosis_omen_outcomeTokens_supply AS (
     --gnosis_omen_outcomeTokens_balance_sparse_v
-    SELECT * FROM query_3684914
+    SELECT * FROM dune.hdser.query_3684914
     WHERE 
         user = 0x0000000000000000000000000000000000000000
         AND
@@ -51,16 +60,16 @@ sparse_suply AS (
         ,idx - 1 AS outcomeIndex
     FROM (
         SELECT 
-            DATE_TRUNC('hour', evt_block_time) AS hour
+            DATE_TRUNC(step, evt_block_time) AS hour
             ,outcomeTokens
             ,ROW_NUMBER() OVER (
                 PARTITION BY
-                    DATE_TRUNC('hour', evt_block_time)
+                    DATE_TRUNC(step, evt_block_time)
                 ORDER BY 
                     evt_block_time DESC
                     ,evt_index DESC
             ) as rn
-        FROM gnosis_omen_outcomeTokens_supply
+        FROM gnosis_omen_outcomeTokens_supply, resolution
     )
     ,UNNEST(outcomeTokens) WITH ORDINALITY o(outcomeToken,idx)
     WHERE rn=1
@@ -78,7 +87,11 @@ dates_range AS (
         FROM
             sparse_suply
     )
-    ,UNNEST(SEQUENCE(min_hour, max_hour,INTERVAL '1' HOUR))  s(hour)
+    ,UNNEST(SEQUENCE(
+        min_hour, 
+        max_hour,
+        IF(DATE_DIFF('hour',min_hour,max_hour)>=10000, INTERVAL '1' day, INTERVAL '1' hour)
+        ))  s(hour)
     ,UNNEST(outcomesIndex)  s(outcomeIndex)
 ),
 

@@ -11,7 +11,7 @@ omen_gnosis_markets_status AS (
 ),
 
 omen_gnosis_markets AS (
-    SELECT * FROM query_3668567
+    SELECT * FROM query_3668567 
 ),
 
 ai_agents_traders AS (
@@ -20,9 +20,9 @@ ai_agents_traders AS (
         ,t1.label
         ,t2.date_cutoff
     FROM 
-        query_3582994 t1
+        dune.hdser.query_3582994 t1
     INNER JOIN
-         query_3644289 t2
+         dune.hdser.query_3644289 t2
          ON t2.label = t1.label
     WHERE
         t2.ranking = '{{ranking}}'
@@ -46,8 +46,8 @@ relevant_markets AS (
             ON t2.address = t1.tx_from OR  t2.address = t1.tx_to
         WHERE
             action = 'Buy'
-            AND
-            t1.block_time >= t2.date_cutoff
+       --     AND
+        --    t1.block_time >= t2.date_cutoff
     )
     GROUP BY 1, 2
 
@@ -71,6 +71,7 @@ SELECT
           , x -> x IS NOT NULL) AS payout_outcome
         ,t2.bet_outcome
         ,t3.resolution_time
+        ,t3.is_valid
     FROM 
         omen_gnosis_markets t1
     INNER JOIN
@@ -81,7 +82,8 @@ SELECT
         ON t3.conditionId = t1.conditionid
         AND t3.questionId = t1.questionid
     WHERE
-        t3.is_valid = True
+        t3.resolution_time >= (SELECT date_cutoff FROM ai_agents_traders LIMIT 1)
+   --     t3.is_valid = True
 ),
 final AS (
     SELECT 
@@ -95,8 +97,8 @@ accuracy_sparse AS (
         label AS agent
         ,resolution_time
         ,COUNT(CASE WHEN market_status = 'Resolved' THEN 1 END) OVER w AS cnt_resolved
-        ,CAST(COUNT(CASE WHEN correct_bet THEN 1 END) OVER w AS REAL) 
-            / (COUNT(CASE WHEN market_status = 'Resolved' THEN 1 END) OVER w)  AS pct_correct
+        ,CAST(COUNT(CASE WHEN correct_bet AND is_valid = True THEN 1 END) OVER w AS REAL) 
+            /  NULLIF((COUNT(CASE WHEN market_status = 'Resolved' AND is_valid = True THEN 1 END) OVER w),0)  AS pct_correct
     FROM
         final
     WHERE 
