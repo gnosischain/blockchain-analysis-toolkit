@@ -31,10 +31,13 @@ gnosis_SafeSetup AS (
 SELECT 
     t3.evt_block_time AS creation_time
     ,t1.pay_wallet 
-    ,t3.owners
+    ,t2.owner
     ,t3.owners || t1.pay_wallet AS wallet_entity
+    ,COUNT(*) OVER (ORDER BY t3.evt_block_time) AS entity_id
 FROM gosis_pay_wallet t1
 INNER JOIN
     gnosis_SafeSetup t3
     ON
     t3.contract_address = t1.pay_wallet
+CROSS JOIN
+    UNNEST(t3.owners) t2(owner)
