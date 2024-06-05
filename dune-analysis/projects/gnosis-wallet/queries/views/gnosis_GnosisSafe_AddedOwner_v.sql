@@ -55,14 +55,11 @@ final AS (
 ),
 
 P256SignerFactory_NewSignerCreated AS (
-    SELECT 
-        VARBINARY_SUBSTRING(data,13,20) AS signer
-    FROM 
-        gnosis.logs
-    WHERE
-        contract_address = 0x73dA77F0f2daaa88b908413495d3D0e37458212e
-        AND
-        block_time >= DATE '2024-01-01'
+  SELECT
+    signer
+  FROM cometh_gnosis.P256SignerFactory_evt_NewSignerCreated  
+  WHERE
+    evt_block_time >= TRY_CAST('2024-01-01' AS timestamp)
 )
 
 SELECT 
