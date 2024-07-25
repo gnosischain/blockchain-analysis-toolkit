@@ -1,6 +1,16 @@
--- query_id: 3782074
+/*
+======= Query Info =======                 
+-- query_id: 3782074                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:44.769164                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
+
 
 omen_gnosis_markets_status AS (
     SELECT * FROM query_3601593
@@ -84,3 +94,5 @@ INNER JOIN
     gnosis_omen_markets_odds_reserves t4
     ON 
     t4.fixedproductmarketmaker = t1.fixedproductmarketmaker
+
+

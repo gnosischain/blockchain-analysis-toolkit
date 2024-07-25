@@ -1,4 +1,15 @@
--- query_id: 3685027
+/*
+======= Query Info =======                 
+-- query_id: 3685027                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: [Parameter(name=fixedproductmarketmaker, value=0x3d2ab113682e5b66b94b1c3043f5885471e72036, type=enum)]                 
+-- last update: 2024-07-25 17:22:43.775850                 
+-- owner: hdser                 
+==========================
+*/
+
+WITH
 
 gnosis_omen_markets_odds_reserves AS (
     SELECT * FROM query_3668140

@@ -1,4 +1,4 @@
-# Blockchain Analysis Toolkit
+# GIP Dahsboard
 
 ## Description 
 
@@ -7,3 +7,5 @@ The Blockchain Analysis Toolkit is a repository designed to facilitate detailed 
 ## Requirements
 
 ## Setup
+
+``` npm run start ```

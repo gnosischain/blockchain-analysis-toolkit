@@ -1,4 +1,13 @@
--- query_id: 3584370
+/*
+======= Query Info =======                 
+-- query_id: 3584370                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: [Parameter(name=agent_maker, value=Replicator, type=enum)]                 
+-- last update: 2024-07-25 17:22:43.985957                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 omen_gnosis_liquidity AS (

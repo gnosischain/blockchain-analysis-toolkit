@@ -1,4 +1,13 @@
--- query_id: 3792681
+/*
+======= Query Info =======                 
+-- query_id: 3792681                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:46.808065                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -21,6 +30,7 @@ metri_monerium_transfers_evts AS (
     SELECT 
         t1.evt_tx_hash
         ,t1.evt_index
+        ,t2.method
     FROM
         gnosis_safe_gnosis.GnosisSafeL2_v1_3_0_evt_SafeMultiSigTransaction t1
     INNER JOIN
@@ -53,11 +63,13 @@ metri_monerium_transfers_evts AS (
 
 SELECT
     t1.evt_tx_hash
+    ,t1.evt_index
     ,t1.evt_block_time
     ,t1.contract_address AS token_address
-    ,t1."from" 
-    ,t1.to
-    ,t1.value
+    ,t1."from" AS wallet_address
+    ,t1.to AS counterparty
+    ,t1.value AS amount_raw
+    ,t2.method
 FROM
     monerium_eure_gnosis.EURe_evt_Transfer t1
 INNER JOIN
@@ -69,13 +81,16 @@ INNER JOIN
     
 UNION ALL
 
+
 SELECT
     t1.evt_tx_hash
+    ,t1.evt_index
     ,t1.evt_block_time
     ,t1.contract_address AS token_address
-    ,t1."from" 
-    ,t1.to
-    ,t1.value
+    ,t1."from" AS wallet_address
+    ,t1.to AS counterparty
+    ,t1.value AS amount_raw
+    ,t2.method
 FROM
     monerium_gbpe_gnosis.GBP_evt_Transfer t1
 INNER JOIN

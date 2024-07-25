@@ -1,4 +1,13 @@
--- query_id: 3644327
+/*
+======= Query Info =======                 
+-- query_id: 3644327                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: [Parameter(name=market creator, value=Replicator, type=enum), Parameter(name=range, value=Last Month, type=enum), Parameter(name=ranking, value=Top 10 by Accuracy, type=enum)]                 
+-- last update: 2024-07-25 17:22:44.984639                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -13,6 +22,13 @@ omen_gnosis_markets_status AS (
 omen_gnosis_markets AS (
     SELECT * FROM query_3668567 
 ),
+
+ai_agents_makers AS (
+    SELECT * FROM query_3584116
+    WHERE
+        label = '{{market creator}}' OR '{{market creator}}' = 'All'
+),
+
 
 ai_agents_traders AS (
     SELECT 
@@ -81,6 +97,9 @@ SELECT
         omen_gnosis_markets_status t3
         ON t3.conditionId = t1.conditionid
         AND t3.questionId = t1.questionid
+    INNER JOIN
+        ai_agents_makers AS t4
+        ON t4.address = t1.creator OR '{{market creator}}' = 'All'
     WHERE
         t3.resolution_time >= (SELECT date_cutoff FROM ai_agents_traders LIMIT 1)
    --     t3.is_valid = True

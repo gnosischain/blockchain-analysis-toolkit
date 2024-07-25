@@ -1,4 +1,13 @@
--- query_id: 3644396
+/*
+======= Query Info =======                 
+-- query_id: 3644396                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: [Parameter(name=market creator, value=Replicator, type=enum), Parameter(name=range, value=Last Month, type=enum), Parameter(name=ranking, value=Top 10 by Accuracy, type=enum)]                 
+-- last update: 2024-07-25 17:22:44.635449                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -9,6 +18,13 @@ gnosis_reserves_trades AS (
 gnosis_reserves_liquidity AS (
     SELECT * FROM omen_gnosis.liquidity
 ),
+
+ai_agents_makers AS (
+    SELECT * FROM query_3584116
+    WHERE
+        label = '{{market creator}}' OR '{{market creator}}' = 'All'
+),
+
 
 gnosis_reserves_delta AS (
     SELECT
@@ -44,9 +60,12 @@ omen_gnosis_markets AS (
             x -> CASE WHEN x <> 0 THEN ARRAY_POSITION(t2.payoutNumerators, x) - 1 ELSE NULL END
           )
           , x -> x IS NOT NULL) AS payout_outcome
-    FROM query_3668567 t1
+    FROM query_3668567 t1 --omen_gnosis_markets
     INNER JOIN omen_gnosis_markets_status t2
     ON t2.fixedProductMarketMaker = t1.fixedProductMarketMaker
+    INNER JOIN
+        ai_agents_makers t3
+        ON t3.address = t1.creator OR '{{market creator}}' = 'All'
 ),
 
 ai_agents_traders AS (
@@ -55,7 +74,7 @@ ai_agents_traders AS (
         ,t1.label
         ,t2.date_cutoff
     FROM 
-        query_3582994 t1
+         query_3582994 t1
     INNER JOIN
          query_3644289 t2
          ON t2.label = t1.label

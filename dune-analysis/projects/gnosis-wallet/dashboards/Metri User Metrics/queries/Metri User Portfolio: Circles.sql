@@ -1,4 +1,13 @@
--- qury_id: 3782625
+/*
+======= Query Info =======                     
+-- query_id: 3782625                     
+-- description: ""                     
+-- tags: []                     
+-- parameters: [Parameter(name=wallet, value=0x800a369d159b8d9605482a56a38ac561dc89aadd, type=enum)]                     
+-- last update: 2024-07-25 17:22:56.907801                     
+-- owner: hdser                     
+==========================
+*/
 
 WITH
 
@@ -9,7 +18,7 @@ circle_metadata AS (
         ,18 AS decimals
     FROM circles_ubi_gnosis.Hub_evt_Signup
     WHERE
-        user =  CAST({{wallet}} AS varbinary)
+        user =  CAST({{wallet}} AS varbinary)--0xA6247834B41771022498F63CAE8820fFEE208265 --0xA1caF31172a0B5b5C3863ee78a797E1b14b1c39a
 ),
 
 balances_diff AS (
@@ -125,3 +134,4 @@ SELECT
 FROM balances
 ORDER BY 
     block_day DESC
+

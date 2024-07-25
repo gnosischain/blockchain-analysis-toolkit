@@ -1,4 +1,13 @@
--- query_id: 3668377
+/*
+======= Query Info =======                 
+-- query_id: 3668377                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:42.868717                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -17,7 +26,7 @@ omen_gnosis_markets_odds_reserves AS (
 ),
 
 omen_gnosis_markets AS (
-    SELECT * FROM query_3668567
+    SELECT * FROM dune.hdser.query_3668567
 ),
 
 markets_tvl AS (

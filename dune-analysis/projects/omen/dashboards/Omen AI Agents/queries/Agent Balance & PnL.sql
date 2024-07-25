@@ -1,4 +1,13 @@
--- uqery_id: 3725565
+/*
+======= Query Info =======                     
+-- query_id: 3816937                     
+-- description: ""                     
+-- tags: []                     
+-- parameters: [Parameter(name=agent_traders, value=PredictionProphetGPT4, type=enum)]                     
+-- last update: 2024-07-25 17:22:57.199094                     
+-- owner: hdser                     
+==========================
+*/
 
 WITH
 
@@ -44,15 +53,17 @@ colateral_invested AS (
         SELECT
             t2.fixedproductmarketmaker
             ,t2.collateralToken
-            ,DATE_TRUNC('hour',t1.evt_block_time) AS date_time
+            ,DATE_TRUNC('hour',t1.block_time) AS date_time
             ,SUM(
                 CASE 
-                    WHEN t1."from" = t2.fixedproductmarketmaker THEN CAST(value AS INT256)
-                    ELSE -CAST(value AS INT256)
+                    WHEN t1."from" = t2.fixedproductmarketmaker THEN CAST(amount_raw AS INT256)
+                    ELSE -CAST(amount_raw AS INT256)
                 END
             ) AS amount
         FROM
-            erc20_gnosis.evt_transfer t1
+            --query_3935887 t1 --tokens_gnosis_transfers_bare_v ASSUMPTION: not validator, no suicide
+            test_schema.git_dunesql_8b40f15_tokens_gnosis_transfers t1
+           -- tokens_gnosis.transfers t1
         INNER JOIN
             relevant_markets t2
             ON
@@ -60,7 +71,9 @@ colateral_invested AS (
         CROSS JOIN
             ai_agents_traders t3
         WHERE
-             t1.evt_block_time >= t2.date_time_min
+             t1.block_time >= t2.date_time_min
+             AND
+             t1.token_standard = 'erc20'
             AND
             (
                 (
@@ -95,7 +108,6 @@ omen_gnosis_markets_odds_reserves AS (
     SELECT 
         fixedproductmarketmaker
         ,DATE_TRUNC('hour', block_time) AS date_time 
-       -- ,ARRAY_AGG(reserves ORDER BY block_time DESC)[1] AS reserves 
         ,ARRAY_AGG(odds ORDER BY block_time DESC)[1] AS odds 
     FROM
         query_3668140 
@@ -110,7 +122,6 @@ omen_gnosis_markets_odds_reserves_lead AS (
     SELECT 
         fixedproductmarketmaker
         ,date_time 
-       -- ,reserves 
         ,odds 
         ,LEAD(date_time) OVER (PARTITION BY fixedproductmarketmaker ORDER BY date_time) AS date_time_lead
     FROM
@@ -132,7 +143,6 @@ odds_and_balance AS (
         t1.fixedproductmarketmaker
         ,t3.collateralToken
         ,t1.date_time
-        --,t2.reserves
         ,t2.odds
         ,t3.outcomeTokens
         ,ARRAY_MAX(t3.outcomeTokens) AS max_payout 
@@ -166,45 +176,44 @@ odds_and_balance AS (
 ),
 
 
-
-
-
 ai_agents_tokens_balance AS (
     SELECT
         date_time
-        ,COALESCE(balance_usd,0) AS balance_usd
+        --,COALESCE(balance_usd,0) AS balance_usd
+        ,balance_usd
         ,LEAD(date_time) OVER (ORDER BY date_time) AS date_time_lead
-    FROM (
-    SELECT
-         t1.date_time
-        ,SUM(t1.balance/POWER(10,t2.decimals)*t2.price) AS balance_usd
     FROM (
         SELECT
         date_time
-        ,token_address
-        ,(SUM(balance_diff) OVER (PARTITION BY token_address ORDER BY date_time)) AS balance
+        ,(SUM(balance_diff) OVER (ORDER BY date_time)) AS balance_usd
     FROM (
         SELECT 
-            DATE_TRUNC('hour', evt_block_time) AS date_time
-            ,token_address
-            ,SUM(value) AS balance_diff
-        FROM query_3715148 
+            t1.block_hour AS date_time
+            ,SUM(t1.amount_raw/POWER(10,decimals)*price) AS balance_diff
+        FROM 
+            query_3817332 t1 --gnosis_omen_ai_agents_balance_diff_hourly_sparse_v
         INNER JOIN
             ai_agents_traders 
             USING (address)
-        GROUP BY
-            1,2
+        LEFT JOIN
+            prices.usd t2
+            ON t2.blockchain = 'gnosis'
+            AND t2.minute = t1.block_hour
+            AND
+            (
+                t2.contract_address = t1.token_address
+                OR 
+                (
+                    t2.contract_address = 0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d 
+                    AND 
+                    t1.token_standard = 'native'
+                )
+            )
+        GROUP BY 1
         ) 
     ) t1
-    LEFT JOIN
-            prices.usd t2
-            ON t2.contract_address = t1.token_address
-            AND t2.blockchain = 'gnosis'
-            AND t2.minute = t1.date_time
-    GROUP BY 
-        1
-    )
 ),
+
 
 PayoutRedemption AS (
     SELECT
@@ -258,6 +267,31 @@ final AS (
     WHERE
         t1.date_time >= t2.date_time AND (t1.date_time < t2.date_time_lead OR t2.date_time_lead IS NULL) 
     GROUP BY 1, 2, 3
+),
+
+calendar_time AS (
+    SELECT 
+        date_time
+    FROM (
+        SELECT 
+            MIN(date_time) AS min_date_time
+            ,MAX(date_time) AS max_date_time
+        FROM
+            final
+    ),
+    UNNEST(SEQUENCE(min_date_time, max_date_time, INTERVAL '1' HOUR)) s(date_time)
 )
 
-SELECT * FROM final
+SELECT 
+    t2.date_time
+    ,LAST_VALUE("Balance") IGNORE NULLS OVER (ORDER BY t2.date_time) AS "Balance"
+    ,COALESCE("Payout",0) AS "Payout"
+    ,LAST_VALUE("Max Profit") IGNORE NULLS OVER (ORDER BY t2.date_time) AS "Max Profit"
+    ,LAST_VALUE("Min Profit") IGNORE NULLS OVER (ORDER BY t2.date_time) AS "Min Profit"
+    ,LAST_VALUE("Realizable") IGNORE NULLS OVER (ORDER BY t2.date_time) AS "Realizable"
+    ,LAST_VALUE("Investment") IGNORE NULLS OVER (ORDER BY t2.date_time) AS "Investment"
+FROM final t1
+RIGHT JOIN
+    calendar_time t2
+    ON 
+    t2.date_time = t1.date_time

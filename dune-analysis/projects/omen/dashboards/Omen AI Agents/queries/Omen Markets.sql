@@ -1,10 +1,19 @@
--- query_id: 3593795
+/*
+======= Query Info =======                 
+-- query_id: 3593795                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:44.341959                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
 
 omen_gnosis_markets_status AS (
-    SELECT * FROM query_3601593
+    SELECT * FROM dune.hdser.query_3601593
 )
 
 SELECT DISTINCT
@@ -27,3 +36,7 @@ ORDER BY
     open_first DESC,
     opening_distance_to_now ASC,
     Status ASC
+
+
+
+

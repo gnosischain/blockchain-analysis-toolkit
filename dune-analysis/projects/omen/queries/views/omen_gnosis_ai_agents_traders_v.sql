@@ -1,4 +1,13 @@
--- query_id: 3582994
+/*
+======= Query Info =======                 
+-- query_id: 3582994                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:43.076936                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH address_elements AS (
   SELECT
@@ -18,7 +27,11 @@ WITH address_elements AS (
             0x2fAe80e1418d9cE9806d61dc3368447247221aa6,
             0x7F429730D530E7514Fe5e40873B931096c403b53,
             0xc83037dd1c876E2b3c38257372B70d0FA3b41079,
-            0xE593aCC8A255D3D0241C308EC1320BBdbC432981
+            0xE593aCC8A255D3D0241C308EC1320BBdbC432981,
+            0x220fFB0529ec8d5f84Dfbc5E4aBD9d1f0822f83a,
+            0x993DFcE14768e4dE4c366654bE57C21D9ba54748,
+            0x45d91b79e8DcAFf2b9E2761cA35a29368252D064,
+            0x05E8BBdb89c84a14d05194bBbAE81CAF2340dB72
         ])  WITH ORDINALITY AS t(address, addr_order)
 ),
 
@@ -40,7 +53,11 @@ label_elements AS (
             'mech_prediction-request-rag',
             'mech_prediction-request-reasoning', 
             'mech_prediction-url-cot', 
-            'mech_prediction-with-research-bold'
+            'mech_prediction-with-research-bold',
+            'microchain-agent',
+            'CoinFlipAgent',
+            'microchain-agent-updateable-prompt',
+            'think-thoroughly-prophet'
         ])  WITH ORDINALITY AS t(label, lbl_order)
 ),
 

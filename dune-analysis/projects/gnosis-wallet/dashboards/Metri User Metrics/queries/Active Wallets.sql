@@ -1,9 +1,18 @@
--- query_id: 3680579
+/*
+======= Query Info =======                 
+-- query_id: 3680579                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:47.575457                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
 gnosis_gw_signupPerson AS (
-    SELECT * FROM query_3663810
+    SELECT * FROM dune.hdser.query_3663810
     WHERE created_at >= DATE '2024-05-01'
 ),
 

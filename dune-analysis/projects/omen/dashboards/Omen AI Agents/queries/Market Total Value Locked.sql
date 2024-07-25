@@ -1,4 +1,13 @@
--- query_id: 3702249
+/*
+======= Query Info =======                 
+-- query_id: 3702249                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: [Parameter(name=fixedproductmarketmaker, value=0x3d2ab113682e5b66b94b1c3043f5885471e72036, type=enum)]                 
+-- last update: 2024-07-25 17:22:43.508609                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 

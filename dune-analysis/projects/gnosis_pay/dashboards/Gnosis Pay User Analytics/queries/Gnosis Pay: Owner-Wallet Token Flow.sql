@@ -1,4 +1,13 @@
--- query_id: 3731800
+/*
+======= Query Info =======                 
+-- query_id: 3731800                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: [Parameter(name=token_address, value=0x5Cb9073902F2035222B9749F8fB0c9BFe5527108, type=enum)]                 
+-- last update: 2024-07-25 17:22:46.237327                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 

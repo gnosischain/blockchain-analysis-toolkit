@@ -1,4 +1,13 @@
---query_id: 3793135
+/*
+======= Query Info =======                     
+-- query_id: 3793135                     
+-- description: ""                     
+-- tags: []                     
+-- parameters: []                     
+-- last update: 2024-07-25 17:22:52.000269                     
+-- owner: hdser                     
+==========================
+*/
 
 WITH
 
@@ -12,7 +21,7 @@ gnosis_metri_monerium_transfers AS (
 eure_transfers AS (
     SELECT
         CAST(evt_block_time AS DATE) AS block_day
-        ,SUM(value/POWER(10,18)) AS value_eure
+        ,SUM(amount_raw/POWER(10,18)) AS value_eure
     FROM
         gnosis_metri_monerium_transfers
     WHERE
@@ -24,7 +33,7 @@ eure_transfers AS (
 gbpe_transfers AS (
     SELECT
         CAST(evt_block_time AS DATE) AS block_day
-        ,SUM(value/POWER(10,18)) AS value_gbpe
+        ,SUM(amount_raw/POWER(10,18)) AS value_gbpe
     FROM
         gnosis_metri_monerium_transfers
     WHERE

@@ -1,4 +1,13 @@
--- query_id: 3674224
+/*
+======= Query Info =======                     
+-- query_id: 3674224                     
+-- description: ""                     
+-- tags: []                     
+-- parameters: []                     
+-- last update: 2024-07-25 17:22:49.413513                     
+-- owner: hdser                     
+==========================
+*/
 
 WITH
 
@@ -47,3 +56,4 @@ INNER JOIN
     gnosis_LogUseGelato1BalanceV2 t4
     ON
     t4.tx_hash = t2.evt_tx_hash
+    

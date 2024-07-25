@@ -1,4 +1,13 @@
--- query_id: 3797741
+/*
+======= Query Info =======                 
+-- query_id: 3797151                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: [Parameter(name=token_address, value=0x5Cb9073902F2035222B9749F8fB0c9BFe5527108, type=enum)]                 
+-- last update: 2024-07-25 17:22:46.525081                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -8,16 +17,16 @@ gnosis_gp_wallet_counterparties_inflow AS (
         ,ROW_NUMBER() OVER () AS index
     FROM (
         SELECT 
-            IF(t1.counterparty = t2.pay_wallet, 
-                'Pay Wallet',
+            IF(t1.counterparty = t2.owner, 
+                'Owner',
                 CAST(t1.counterparty AS VARCHAR)
             ) AS counterparty 
             ,SUM(t1.balance_diff) AS value
         FROM 
-            query_3796435 t1 --gnosis_gp_entities_daily_balance_diff
+            query_3796435 t1 --
         INNER JOIN 
             query_3707804 t2 --gnosis_gp_users
-            ON t2.owner = t1.user
+            ON t2.pay_wallet = t1.user
         WHERE
             t1.token_address = CAST({{token_address}} AS varbinary)
             AND
@@ -39,7 +48,7 @@ gnosis_gp_wallet_counterparties_outflow AS (
     FROM (
         SELECT 
             IF(t1.counterparty = t2.owner, 
-                'Pay Wallet',
+                'Owner',
                 CAST(t1.counterparty AS VARCHAR)
             ) AS counterparty 
             ,SUM(ABS(t1.balance_diff)) AS value

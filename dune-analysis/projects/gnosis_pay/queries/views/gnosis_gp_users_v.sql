@@ -1,4 +1,13 @@
--- query_id: 3707804
+/*
+======= Query Info =======                 
+-- query_id: 3707804                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:45.614900                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 

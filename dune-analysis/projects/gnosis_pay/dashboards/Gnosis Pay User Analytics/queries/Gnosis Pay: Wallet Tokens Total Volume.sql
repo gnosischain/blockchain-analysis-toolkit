@@ -1,4 +1,13 @@
--- query_id: 3741643
+/*
+======= Query Info =======                 
+-- query_id: 3741643                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:45.887901                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -6,20 +15,54 @@ gnosis_gp_users AS (
     SELECT * FROM query_3707804
 ),
 
-volume_raw AS (
+tokens_volume_raw AS (
     SELECT
         t1.block_hour
         ,t1.token_address
-        ,SUM(ABS(t1.amount_raw)) AS amount_raw
+        ,SUM(
+            IF(t3.pay_wallet IS NULL, ABS(t1.amount_raw), ABS(t1.amount_raw)/2) 
+        ) AS amount_raw
     FROM
-        test_schema.git_dunesql_11470a0_transfers_gnosis_erc20_agg_hour t1
+        test_schema.git_dunesql_3334f50_transfers_gnosis_erc20_agg_hour t1
     INNER JOIN
         gnosis_gp_users t2
         ON 
         t2.pay_wallet = t1.wallet_address
+    LEFT JOIN
+        gnosis_gp_users t3
+        ON 
+        t3.pay_wallet = t1.counterparty
     WHERE
         DATE_TRUNC('day',t1.block_hour) >= CURRENT_DATE - INTERVAL '14' DAY
     GROUP BY 1,2
+),
+
+xdai_volume_raw AS (
+    SELECT
+        t1.block_hour
+        ,t1.token_address
+        ,SUM(
+            IF(t3.pay_wallet IS NULL, ABS(t1.amount_raw), ABS(t1.amount_raw)/2)
+        ) AS amount_raw
+    FROM
+        test_schema.git_dunesql_3334f50_transfers_gnosis_xdai_agg_hour t1
+    INNER JOIN
+        gnosis_gp_users t2
+        ON 
+        t2.pay_wallet = t1.wallet_address
+    LEFT JOIN
+        gnosis_gp_users t3
+        ON 
+        t3.pay_wallet = t1.counterparty
+    WHERE
+        DATE_TRUNC('day',t1.block_hour) >= CURRENT_DATE - INTERVAL '14' DAY
+    GROUP BY 1,2
+),
+
+volume_raw AS (
+    SELECT * FROM tokens_volume_raw
+    UNION ALL
+    SELECT * FROM xdai_volume_raw
 ),
 
 calendar AS (

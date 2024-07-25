@@ -1,4 +1,13 @@
--- query_id: 3584516
+/*
+======= Query Info =======                 
+-- query_id: 3584516                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: [Parameter(name=agent_traders, value=PredictionProphetGPT4, type=enum)]                 
+-- last update: 2024-07-25 17:22:44.699674                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 

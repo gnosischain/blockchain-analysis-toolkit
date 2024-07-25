@@ -1,4 +1,13 @@
--- query_id: 3644289
+/*
+======= Query Info =======                 
+-- query_id: 3644289                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:43.306635                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -190,6 +199,25 @@ mechs_agents AS (
         GROUP BY range,date_cutoff
     ),
     UNNEST(labels) WITH ORDINALITY l(label,idx)
+),
+
+olas_agents AS (
+    SELECT
+        label
+        ,ranking
+        ,range
+        ,date_cutoff
+    FROM (
+        SELECT 
+            ARRAY_AGG(label) AS labels
+            ,'Olas' AS ranking
+            ,range 
+            ,date_cutoff
+        FROM final
+        WHERE label LIKE 'Olas_%'
+        GROUP BY range,date_cutoff
+    ),
+    UNNEST(labels) WITH ORDINALITY l(label,idx)
 )
     
 SELECT * FROM top10_resolved
@@ -201,4 +229,6 @@ UNION ALL
 SELECT * FROM pma_agents
 UNION ALL 
 SELECT * FROM mechs_agents
+UNION ALL 
+SELECT * FROM olas_agents
 ORDER BY 2 ASC

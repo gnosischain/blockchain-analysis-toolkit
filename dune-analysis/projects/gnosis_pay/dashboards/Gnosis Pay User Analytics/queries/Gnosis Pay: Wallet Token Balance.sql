@@ -1,29 +1,28 @@
--- query_id: 3739395
+/*
+======= Query Info =======                 
+-- query_id: 3739395                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:45.685345                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
-gnosis_gp_users AS (
-    SELECT * FROM query_3707804
-),
 
 balances_diff AS (
-    SELECT
-        t1.block_day
-        ,t1.token_address
-        ,SUM(t1.amount_raw) AS amount_raw
-    FROM
-        test_schema.git_dunesql_11470a0_transfers_gnosis_erc20_agg_day t1
-    INNER JOIN
-        gnosis_gp_users t2
-        ON 
-        (
-            t2.pay_wallet = t1.wallet_address
-         --   OR
-         --   t2.owner = t1.wallet_address
-        )
-      -- AND
-     --  t1.block_month >= DATE_TRUNC('Month',t2.creation_time)
-    GROUP BY 1,2
+    SELECT 
+        block_day
+        ,token_address
+        ,SUM(amount_raw) AS amount_raw
+    FROM 
+        query_3814057 -- gnosis_gp_balance_diff_daily_v
+    WHERE 
+        label = 'Wallet'
+    GROUP BY
+        1, 2
 ),
 
 calendar AS (

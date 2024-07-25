@@ -1,4 +1,13 @@
--- query_id: 3735920
+/*
+======= Query Info =======                 
+-- query_id: 3735920                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:47.772643                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -18,7 +27,7 @@ balances_diff AS (
         ,t1.token_address
         ,SUM(t1.amount_raw) AS amount_raw
     FROM
-        test_schema.git_dunesql_11470a0_transfers_gnosis_erc20_agg_day t1
+        test_schema.git_dunesql_075f38f_transfers_gnosis_erc20_agg_day t1
     INNER JOIN
         gnosis_gw_signupPerson t2
         ON
@@ -30,17 +39,17 @@ balances_diff AS (
     UNION ALL
         
     SELECT
-        t1.day AS block_day
+        t1.block_day
         ,t1.token_address
         ,SUM(t1.amount_raw) AS amount_raw
     FROM
-        test_schema.git_dunesql_11470a0_transfers_gnosis_xdai_agg_day t1
+        test_schema.git_dunesql_075f38f_transfers_gnosis_xdai_agg_day t1
     INNER JOIN
         gnosis_gw_signupPerson t2
         ON
         t2.safe_wallet = t1.wallet_address
         AND
-        t1.day >= DATE_TRUNC('day',t2.created_at)
+        t1.block_day >= DATE_TRUNC('day',t2.created_at)
     GROUP BY 1,2
     )
     GROUP BY 1,2

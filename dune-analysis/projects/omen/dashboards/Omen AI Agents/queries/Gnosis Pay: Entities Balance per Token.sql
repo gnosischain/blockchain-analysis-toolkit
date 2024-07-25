@@ -1,45 +1,26 @@
--- query_id: 3740979
+/*
+======= Query Info =======                 
+-- query_id: 3740979                 
+-- description: "Entities (Wallet + Owner) balances per token including xDAI "                 
+-- tags: ['Entities', 'Balance', 'Token']                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:44.197549                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
-gnosis_gp_users AS (
-    SELECT * FROM query_3707804
-),
 
 balances_diff AS (
     SELECT 
-         block_day
+        block_day
         ,token_address
         ,SUM(amount_raw) AS amount_raw
-    FROM (
-    SELECT
-        t1.block_day
-        ,t1.token_address
-        ,SUM(t1.amount_raw) AS amount_raw
-    FROM
-        test_schema.git_dunesql_11470a0_transfers_gnosis_erc20_agg_day t1
-    INNER JOIN
-        gnosis_gp_users t2
-        ON 
-        t2.pay_wallet = t1.wallet_address
-    GROUP BY 1,2
-    
-    UNION ALL
-    
-    SELECT
-        t1.block_day
-        ,t1.token_address
-        ,SUM(t1.amount_raw) AS amount_raw
-    FROM
-        test_schema.git_dunesql_11470a0_transfers_gnosis_erc20_agg_day t1
-    INNER JOIN
-        gnosis_gp_users t2
-        ON 
-        t2.owner = t1.wallet_address
-    GROUP BY 1,2
-    )
-    GROUP BY 1,2
-    
+    FROM 
+        query_3814057 -- gnosis_gp_balance_diff_daily_v
+    GROUP BY
+        1, 2
 ),
 
 calendar AS (

@@ -1,40 +1,26 @@
--- query_id: 3746283
+/*
+======= Query Info =======                 
+-- query_id: 3746283                 
+-- description: "Entities (Wallet + Owner) Daily Balances including ERC20 tokens and xDAI"                 
+-- tags: ['Entities', 'Balance']                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:46.096161                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
-gnosis_gp_users AS (
-    SELECT * FROM query_3707804
-),
-
 balances_diff AS (
-    SELECT
-        t1.block_day
-        ,t1.token_address
-        ,'Wallet' AS label
-        ,SUM(t1.amount_raw) AS amount_raw
-    FROM
-        test_schema.git_dunesql_11470a0_transfers_gnosis_erc20_agg_day t1
-    INNER JOIN
-        gnosis_gp_users t2
-        ON 
-        t2.pay_wallet = t1.wallet_address
-    GROUP BY 1,2,3
-    
-    UNION ALL
-    
-    SELECT
-        t1.block_day
-        ,t1.token_address
-        ,'Owner' AS label
-        ,SUM(t1.amount_raw) AS amount_raw
-    FROM
-        test_schema.git_dunesql_11470a0_transfers_gnosis_erc20_agg_day t1
-    INNER JOIN
-        gnosis_gp_users t2
-        ON 
-        t2.owner = t1.wallet_address
-    GROUP BY 1,2,3
-    
+    SELECT 
+        block_day
+        ,token_address
+        ,label
+        ,SUM(amount_raw) AS amount_raw
+    FROM 
+        query_3814057 -- gnosis_gp_balance_diff_daily_v
+    GROUP BY
+        1, 2, 3
 ),
 
 calendar AS (
@@ -110,9 +96,12 @@ balances_entities AS (
 SELECT
     block_day
     ,label
-   ,t1.amount
+    ,t1.amount
+    ,(t1.amount/(LAG(t1.amount,7) OVER (PARTITION BY label ORDER BY block_day)) - 1) * 100 AS balance_change_7d_pct
 FROM balances_entities t1
 WHERE
     block_day >= CURRENT_DATE - INTERVAL '1' YEAR
     AND
     block_day < CURRENT_DATE
+ORDER BY
+    block_day DESC, label ASC

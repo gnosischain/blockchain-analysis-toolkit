@@ -1,4 +1,13 @@
--- query_id: 3731998
+/*
+======= Query Info =======                 
+-- query_id: 3731998                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:46.382691                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 

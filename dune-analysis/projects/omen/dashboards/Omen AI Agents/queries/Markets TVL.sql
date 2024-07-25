@@ -1,20 +1,29 @@
--- query_id: 3669265
+/*
+======= Query Info =======                 
+-- query_id: 3669265                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:43.642663                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
 gnosis_omen_markets_tvl AS (
-    SELECT * FROM query_3668377
+    SELECT * FROM dune.hdser.query_3668377
 ),
 
 omen_gnosis_markets AS (
-    SELECT * FROM query_3668567
+    SELECT * FROM dune.hdser.query_3668567
 ),
 
 gnosis_omen_markets_odds_reserves AS (
     SELECT 
         t1.* 
         ,t1.cumsum_feeAmount/POWER(10,t3.decimals) * t3.price AS cumsum_feeAmount_usd
-    FROM query_3668140 t1
+    FROM dune.hdser.query_3668140 t1
     INNER JOIN
         omen_gnosis_markets t2
         ON t2.fixedproductmarketmaker = t1.fixedproductmarketmaker

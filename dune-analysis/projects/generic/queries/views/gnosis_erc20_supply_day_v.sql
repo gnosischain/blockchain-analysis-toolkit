@@ -1,4 +1,13 @@
--- query_id: 3800348
+/*
+======= Query Info =======                 
+-- query_id: 3800348                 
+-- description: "This query tracks the daily circulating supply of ERC20 tokens on Gnosis Chain."                 
+-- tags: ['ERC20', 'Supply', 'View']                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:47.970160                 
+-- owner: hdser                 
+==========================
+*/
 
 SELECT
     t1.token_address
@@ -9,7 +18,7 @@ FROM (
             token_address
             ,block_day
             ,SUM(amount_raw) AS amount_raw
-        FROM test_schema.git_dunesql_11470a0_transfers_gnosis_erc20_agg_day
+        FROM test_schema.git_dunesql_6849743_transfers_gnosis_erc20_agg_day
         WHERE 
             wallet_address = 0x0000000000000000000000000000000000000000
         GROUP BY

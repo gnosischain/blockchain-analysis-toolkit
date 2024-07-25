@@ -1,4 +1,13 @@
--- query_id: 3785418
+/*
+======= Query Info =======                 
+-- query_id: 3785418                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:47.293356                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -38,7 +47,7 @@ calendar AS (
         FROM
             metri_counts_sparse
     )
-    ,UNNEST(SEQUENCE(min_day, CURRENT_DATE, INTERVAL '1' DAY)) s(day)
+    ,UNNEST(SEQUENCE(min_day, CURRENT_DATE - INTERVAL '1' DAY, INTERVAL '1' DAY)) s(day)
     ,UNNEST(ARRAY['Created','Imported']) t(method)
 ),
 

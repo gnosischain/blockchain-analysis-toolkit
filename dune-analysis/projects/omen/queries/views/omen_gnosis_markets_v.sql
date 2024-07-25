@@ -1,4 +1,13 @@
--- query_id: 3668567
+/*
+======= Query Info =======                 
+-- query_id: 3668567                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:43.007884                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH 
 
@@ -23,7 +32,7 @@ Realitio_LogNewQuestion AS (
         timeout,
         user
     FROM 
-        "delta_prod"."omen_gnosis"."Realitio_v2_1_evt_LogNewQuestion"
+        omen_gnosis.Realitio_v2_1_evt_LogNewQuestion
     
     WHERE evt_block_time >= TIMESTAMP '2020-12-01'
     
@@ -41,7 +50,7 @@ QuestionIdAnnouncement AS (
         VARBINARY_TO_UINT256(VARBINARY_LTRIM(VARBINARY_SUBSTRING(data, 1, 32))) AS low,
         VARBINARY_TO_UINT256(VARBINARY_LTRIM(VARBINARY_SUBSTRING(data, 33, 32))) AS high
     FROM 
-        "delta_prod"."gnosis"."logs"
+        gnosis.logs
     WHERE
         --QuestionIdAnnouncement
         topic0 = 0xab038c0885722fffdf6864cf016c56fa921a1506541dac4fcd59d65963916cb1
@@ -66,8 +75,7 @@ ConditionPreparation AS (
         outcomeSlotCount,
         questionId
     FROM 
-        "delta_prod"."omen_gnosis"."ConditionalTokens_evt_ConditionPreparation"
-    
+        omen_gnosis.ConditionalTokens_evt_ConditionPreparation
     WHERE evt_block_time >= TIMESTAMP '2020-12-01'
     
 ), 
@@ -108,12 +116,9 @@ FixedProductMarketMakerCreation AS (
         fixedProductMarketMaker,
         conditionId
     FROM 
-        "delta_prod"."omen_gnosis"."FPMMDeterministicFactory_evt_FixedProductMarketMakerCreation"
+        omen_gnosis.FPMMDeterministicFactory_evt_FixedProductMarketMakerCreation
         ,UNNEST(conditionIds) t(conditionId)
-    
     WHERE evt_block_time >= TIMESTAMP '2020-12-01'
-     
-        
 ),
 
 
@@ -142,7 +147,8 @@ prediction_market_info AS (
         REGEXP_REPLACE(REVERSE(SPLIT_PART(REVERSE(t1.question), '␟', 2)), '[^A-Za-z]', '') AS category,
         FROM_UNIXTIME(t1.opening_ts) AS opening_time,
         t1.timeout,
-        FROM_UNIXTIME(t1.created) AS creation_time
+        FROM_UNIXTIME(t1.created) AS creation_time,
+        t3.creator
     FROM 
         Realitio_LogNewQuestion t1
     LEFT JOIN 

@@ -1,4 +1,13 @@
--- query_id: 3736387
+/*
+======= Query Info =======                 
+-- query_id: 3736387                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:47.708067                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -45,3 +54,4 @@ circle_metadata AS (
         ON
         t2.token_address = t1.token_address
     GROUP BY 1
+   

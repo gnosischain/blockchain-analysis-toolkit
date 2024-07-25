@@ -1,4 +1,13 @@
--- query_id: 3663810
+/*
+======= Query Info =======                 
+-- query_id: 3663810                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:47.017560                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH 
 /*
@@ -57,3 +66,4 @@ INNER JOIN
     Hub_evt_Signup t2
     ON t2.evt_tx_hash = t1.evt_tx_hash 
     AND t2.user = t1.contract_address
+

@@ -1,4 +1,13 @@
--- query_id: 3630834
+/*
+======= Query Info =======                 
+-- query_id: 3630834                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:44.056919                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -31,7 +40,7 @@ gnosis_reserves_delta AS (
 ),
 
 omen_gnosis_markets_status AS (
-    SELECT * FROM query_3601593
+    SELECT * FROM dune.hdser.query_3601593
     WHERE status = 'Resolved' AND is_valid = TRUE
 ),
 
@@ -44,13 +53,13 @@ omen_gnosis_markets AS (
             x -> CASE WHEN x <> 0 THEN ARRAY_POSITION(t2.payoutNumerators, x) - 1 ELSE NULL END
           )
           , x -> x IS NOT NULL) AS payout_outcome
-    FROM query_3668567 t1
+    FROM dune.hdser.result_omen_gnosis_markets_mv t1
     INNER JOIN omen_gnosis_markets_status t2
     ON t2.fixedProductMarketMaker = t1.fixedProductMarketMaker
 ),
 
 ai_agents_traders AS (
-    SELECT * FROM query_3582994
+    SELECT * FROM dune.hdser.query_3582994
 ),
 
 probabilities AS (

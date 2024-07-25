@@ -1,6 +1,16 @@
--- query_id: 3781367
+/*
+======= Query Info =======                 
+-- query_id: 3781367                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:43.709063                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
+
 
 omen_gnosis_markets_status AS (
     SELECT * FROM query_3601593
@@ -56,6 +66,10 @@ gnosis_omen_markets_odds_reserves AS (
         t2.fixedproductmarketmaker = t1.fixedproductmarketmaker
     GROUP BY 
         1
+),
+
+gnosis_omen_market_labels AS (
+    SELECT * FROM query_3895267
 )
 
 SELECT 
@@ -66,7 +80,8 @@ SELECT
     ARRAY[ROUND(odds[1] * 100,2),ROUND(odds[2] * 100,2)] AS odds,
     symbol AS "Currency",
     tvl AS "Liquidity",
-    supply/POWER(10,decimals) AS "Market Value Locked"
+    supply/POWER(10,decimals) AS "Market Value Locked",
+    t5.label AS "Source"
 FROM omen_gnosis_markets_status t1
 INNER JOIN
     gnosis_omen_markets_tvl t2
@@ -80,3 +95,9 @@ INNER JOIN
     gnosis_omen_markets_odds_reserves t4
     ON 
     t4.fixedproductmarketmaker = t1.fixedproductmarketmaker
+LEFT JOIN
+    gnosis_omen_market_labels t5
+    ON
+    t5.fixedproductmarketmaker = t1.fixedproductmarketmaker
+
+

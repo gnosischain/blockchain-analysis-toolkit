@@ -1,4 +1,13 @@
--- query_id: 3792185
+/*
+======= Query Info =======                 
+-- query_id: 3792185                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:47.374130                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -47,7 +56,7 @@ crc_transfers_gnosis AS (
         ,t1.transfer_type
         ,t1.amount_raw/POWER(10,18) AS amount
     FROM
-        test_schema.git_dunesql_85ca863_transfers_gnosis_erc20 t1
+        test_schema.git_dunesql_075f38f_transfers_gnosis_erc20 t1
     INNER JOIN
         gnosis_metri_wallets t2
         ON

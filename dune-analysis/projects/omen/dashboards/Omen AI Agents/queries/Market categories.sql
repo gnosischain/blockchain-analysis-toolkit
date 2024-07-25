@@ -1,4 +1,13 @@
--- query_id: 3582989
+/*
+======= Query Info =======                 
+-- query_id: 3582989                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:44.415427                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -14,11 +23,11 @@ omen_gnosis_markets AS (
 ),
 
 ai_agents_traders AS (
-    SELECT * FROM query_3582994
+    SELECT * FROM dune.hdser.query_3582994
 ),
 
 ai_agents_makers AS (
-    SELECT * FROM query_3584116
+    SELECT * FROM dune.hdser.query_3584116
 )
 
 

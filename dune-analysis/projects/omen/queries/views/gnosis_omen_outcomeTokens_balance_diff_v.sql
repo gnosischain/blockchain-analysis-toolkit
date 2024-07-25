@@ -1,4 +1,13 @@
--- query_id: 3684914
+/*
+======= Query Info =======                     
+-- query_id: 3870892                     
+-- description: ""                     
+-- tags: []                     
+-- parameters: []                     
+-- last update: 2024-07-25 17:22:50.655300                     
+-- owner: hdser                     
+==========================
+*/
 
 WITH
 
@@ -131,25 +140,4 @@ outcomeToken_balances_delta AS (
     )
 )
 
-SELECT
-     fixedProductMarketMaker
-     ,collateralToken
-    ,evt_block_time
-    ,evt_index
-    ,user
-    ,ARRAY_AGG(value ORDER BY idx) AS outcomeTokens
-FROM (
-    SELECT
-        fixedProductMarketMaker
-        ,collateralToken
-        ,evt_block_time
-        ,evt_index
-        ,user
-        ,idx
-        ,SUM(value) OVER (PARTITION BY fixedProductMarketMaker, user, idx ORDER BY evt_block_time, evt_index) AS value
-    FROM
-        outcomeToken_balances_delta
-        ,UNNEST(delta_outcomeTokens) WITH ORDINALITY d(value,idx)
-)
-GROUP BY
-    1,2,3,4,5
+SELECT * FROM outcomeToken_balances_delta

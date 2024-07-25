@@ -1,4 +1,13 @@
--- query_id: 3747572
+/*
+======= Query Info =======                 
+-- query_id: 3747572                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:46.877446                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH 
 

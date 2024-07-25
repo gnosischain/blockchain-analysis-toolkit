@@ -1,4 +1,13 @@
--- query_id: 3707217
+/*
+======= Query Info =======                 
+-- query_id: 3707217                 
+-- description: ""                 
+-- tags: []                 
+-- parameters: []                 
+-- last update: 2024-07-25 17:22:45.418197                 
+-- owner: hdser                 
+==========================
+*/
 
 WITH
 
@@ -104,4 +113,3 @@ tokens_netflow AS (
 )
 
 SELECT * FROM tokens_netflow
-
