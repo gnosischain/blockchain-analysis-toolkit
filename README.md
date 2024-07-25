@@ -1,4 +1,4 @@
-# GIP Dahsboard
+# Blockchain Analysis Toolkit
 
 ## Description 
 
